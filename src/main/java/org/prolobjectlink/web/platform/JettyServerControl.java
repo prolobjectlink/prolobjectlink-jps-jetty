@@ -26,12 +26,11 @@ import org.prolobjectlink.db.DatabaseServer;
 import org.prolobjectlink.db.platform.linux.LinuxDatabaseServer;
 import org.prolobjectlink.db.platform.macosx.MacosxDatabaseServer;
 import org.prolobjectlink.db.platform.win32.Win32DatabaseServer;
-import org.prolobjectlink.web.platform.linux.LinuxServerControl;
 import org.prolobjectlink.web.platform.linux.jetty.LinuxJettyWebServer;
 import org.prolobjectlink.web.platform.macosx.jetty.MacosxJettyWebServer;
 import org.prolobjectlink.web.platform.win32.jetty.Win32JettyWebServer;
 
-public class JettyServerControl extends LinuxServerControl implements WebServerControl {
+public class JettyServerControl extends AbstractWebControl implements WebServerControl {
 
 	public JettyServerControl(WebServer webServer, DatabaseServer databaseServer) {
 		super(webServer, databaseServer);

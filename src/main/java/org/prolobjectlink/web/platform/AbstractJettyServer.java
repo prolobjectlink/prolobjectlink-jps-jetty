@@ -26,7 +26,9 @@ import java.util.Map;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.prolobjectlink.web.servlet.HomeServlet;
 
 /**
  * 
@@ -43,6 +45,9 @@ public abstract class AbstractJettyServer extends AbstractWebServer implements J
 		super(serverPort);
 		connector.setPort(serverPort);
 		jettyServer.setConnectors(new Connector[] { connector });
+		ServletHandler handler = new ServletHandler();
+		handler.addServletWithMapping(HomeServlet.class, "/home");
+		jettyServer.addHandler(handler);
 	}
 
 	public final String getVersion() {

@@ -42,26 +42,24 @@ public class JettyServerControl extends LinuxServerControl implements WebServerC
 
 		int port = 8081;
 
+		JettyWebServer server = null;
 		DatabaseServer database = null;
-		JettyWebServer tomcat = null;
-
-		System.out.println(WebPlatformUtil.getOsName());
 
 		if (WebPlatformUtil.runOnWindows()) {
 			database = new Win32DatabaseServer();
-			tomcat = new Win32JettyWebServer(port);
+			server = new Win32JettyWebServer(port);
 		} else if (WebPlatformUtil.runOnOsX()) {
 			database = new MacosxDatabaseServer();
-			tomcat = new MacosxJettyWebServer(port);
+			server = new MacosxJettyWebServer(port);
 		} else if (WebPlatformUtil.runOnLinux()) {
 			database = new LinuxDatabaseServer();
-			tomcat = new LinuxJettyWebServer(port);
+			server = new LinuxJettyWebServer(port);
 		} else {
 			Logger.getLogger(JettyServerControl.class.getName()).log(Level.SEVERE, null, "Not supported platfor");
 			System.exit(1);
 		}
 
-		new JettyServerControl(tomcat, database).run(args);
+		new JettyServerControl(server, database).run(args);
 	}
 
 }

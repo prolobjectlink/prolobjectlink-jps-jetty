@@ -19,15 +19,10 @@
  */
 package org.prolobjectlink.web.platform;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.mortbay.jetty.servlet.ServletHandler;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletHandler;
 import org.prolobjectlink.web.servlet.HomeServlet;
 
 /**
@@ -38,8 +33,8 @@ import org.prolobjectlink.web.servlet.HomeServlet;
 public abstract class AbstractJettyServer extends AbstractWebServer implements JettyWebServer {
 
 	private final Server jettyServer = new Server();
-	private final Connector connector = new SelectChannelConnector();
-	// private final ServerConnector connector = new ServerConnector(jettyServer);
+	// private final Connector connector = new SelectChannelConnector()
+	private final ServerConnector connector = new ServerConnector(jettyServer);
 
 	public AbstractJettyServer(int serverPort) {
 		super(serverPort);
@@ -47,7 +42,7 @@ public abstract class AbstractJettyServer extends AbstractWebServer implements J
 		jettyServer.setConnectors(new Connector[] { connector });
 		ServletHandler handler = new ServletHandler();
 		handler.addServletWithMapping(HomeServlet.class, "/home");
-		jettyServer.addHandler(handler);
+		jettyServer.setHandler(handler);
 	}
 
 	public final String getVersion() {
@@ -59,123 +54,25 @@ public abstract class AbstractJettyServer extends AbstractWebServer implements J
 	}
 
 	public final void start() {
-
-		System.out.println("Server is starting");
-
-		// Pass-through of arguments for Jetty
-		final Map<String, String> serverArgs = parseArguments();
-//        final Map<String, String> serverArgs = parseArguments(args);
-
-		// Start Jetty
-		System.out.println("Starting Jetty servlet container.");
-		String url;
 		try {
-			url = runServer(serverArgs, "Development Server Mode");
-			// Start Browser
-			if (!serverArgs.containsKey("nogui") && url != null) {
-				System.out.println("Starting Web Browser.");
-
-				// Open browser into application URL
-//				BrowserLauncher.openBrowser(url);
-			}
+			jettyServer.start();
+			jettyServer.join();
 		} catch (Exception e) {
-			// NOP exception already on console by jetty
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			stop();
 		}
+
 	}
 
 	public final void stop() {
-		// TODO Auto-generated method stub
 		System.out.println("Server is stopping");
-	}
-
-	/**
-	 * Run the server with specified arguments.
-	 * 
-	 * @param serverArgs
-	 * @return
-	 * @throws Exception
-	 * @throws Exception
-	 */
-	protected String runServer(Map<String, String> serverArgs, String mode) throws Exception {
-
-		// Assign default values for some arguments
-		assignDefault(serverArgs, "webroot", "WebContent");
-		assignDefault(serverArgs, "httpPort", "" + getPort());
-		assignDefault(serverArgs, "context", "");
-
-		int port = getPort();
 		try {
-			port = Integer.parseInt(serverArgs.get("httpPort"));
-		} catch (NumberFormatException e) {
-			// keep default value for port
+			jettyServer.stop();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-
-		// Add help for System.out
-		System.out.println("-------------------------------------------------\n" + "Starting Vaadin in " + mode + ".\n"
-				+ "Running in http://localhost:" + getPort() + "\n-------------------------------------------------\n");
-
-		final Server server = new Server();
-
-//		final ServerConnector connector = new ServerConnector(server);
-		final Connector connector = new SelectChannelConnector();
-
-		connector.setPort(port);
-		server.setConnectors(new Connector[] { connector });
-
-		final WebAppContext webappcontext = new WebAppContext();
-		String path = getClass().getPackage().getName().replace(".", File.separator);
-		webappcontext.setDefaultsDescriptor(path + File.separator + "jetty-webdefault.xml");
-		webappcontext.setContextPath(serverArgs.get("context"));
-		webappcontext.setWar(serverArgs.get("webroot"));
-		server.setHandler(webappcontext);
-
-		try {
-			server.start();
-		} catch (Exception e) {
-			server.stop();
-			throw e;
-		}
-
-		return "http://localhost:" + port + serverArgs.get("context");
-	}
-
-	/**
-	 * Assign default value for given key.
-	 * 
-	 * @param map
-	 * @param key
-	 * @param value
-	 */
-	private void assignDefault(Map<String, String> map, String key, String value) {
-		if (!map.containsKey(key)) {
-			map.put(key, value);
-		}
-	}
-
-	private Map<String, String> parseArguments() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * Parse all command line arguments into a map.
-	 * 
-	 * Arguments format "key=value" are put into map.
-	 * 
-	 * @param args
-	 * @return map of arguments key value pairs.
-	 */
-	protected Map<String, String> parseArguments(String[] args) {
-		final Map<String, String> map = new HashMap<String, String>();
-		for (int i = 0; i < args.length; i++) {
-			final int d = args[i].indexOf("=");
-			if (d > 0 && d < args[i].length() && args[i].startsWith("--")) {
-				final String name = args[i].substring(2, d);
-				final String value = args[i].substring(d + 1);
-				map.put(name, value);
-			}
-		}
-		return map;
 	}
 
 }

@@ -89,6 +89,11 @@
 			<version>[1.0.0, )</version>
 		</dependency>
 		<dependency>
+			<groupId>org.prolobjectlink</groupId>
+			<artifactId>prolobjectlink-jpp-javax</artifactId>
+			<version>[1.0.0, )</version>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
 			<artifactId>jetty-all</artifactId>
 			<version>9.4.10.v20180503</version>

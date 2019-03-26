@@ -54,11 +54,9 @@ public abstract class AbstractJettyServer extends AbstractWebServer implements J
 	}
 
 	public final void start() {
-		System.out.println("Server is starting");
 		try {
 			jettyServer.start();
 			jettyServer.join();
-			System.out.println("Server is started");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

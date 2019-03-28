@@ -54,7 +54,7 @@ public class JettyServerControl extends AbstractWebControl implements WebServerC
 			database = new LinuxDatabaseServer();
 			server = new LinuxJettyWebServer(port);
 		} else {
-			Logger.getLogger(JettyServerControl.class.getName()).log(Level.SEVERE, null, "Not supported platfor");
+			Logger.getLogger(JettyServerControl.class.getName()).log(Level.SEVERE, null, "Not supported platform");
 			System.exit(1);
 		}
 

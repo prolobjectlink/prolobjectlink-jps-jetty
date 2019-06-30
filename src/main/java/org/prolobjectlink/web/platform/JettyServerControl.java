@@ -37,7 +37,6 @@ public class JettyServerControl extends AbstractWebControl implements WebServerC
 	}
 
 	public static void main(String[] args) {
-		// TODO Port from args
 
 		int port = 8081;
 

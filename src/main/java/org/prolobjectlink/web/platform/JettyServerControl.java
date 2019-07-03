@@ -19,45 +19,12 @@
  */
 package org.prolobjectlink.web.platform;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.prolobjectlink.db.DatabaseServer;
-import org.prolobjectlink.db.platform.linux.LinuxDatabaseServer;
-import org.prolobjectlink.db.platform.macosx.MacosxDatabaseServer;
-import org.prolobjectlink.db.platform.win32.Win32DatabaseServer;
-import org.prolobjectlink.web.platform.linux.jetty.LinuxJettyWebServer;
-import org.prolobjectlink.web.platform.macosx.jetty.MacosxJettyWebServer;
-import org.prolobjectlink.web.platform.win32.jetty.Win32JettyWebServer;
 
 public class JettyServerControl extends AbstractWebControl implements WebServerControl {
 
 	public JettyServerControl(WebServer webServer, DatabaseServer databaseServer) {
 		super(webServer, databaseServer);
-	}
-
-	public static void main(String[] args) {
-
-		int port = 8081;
-
-		JettyWebServer server = null;
-		DatabaseServer database = null;
-
-		if (WebPlatformUtil.runOnWindows()) {
-			database = new Win32DatabaseServer();
-			server = new Win32JettyWebServer(port);
-		} else if (WebPlatformUtil.runOnOsX()) {
-			database = new MacosxDatabaseServer();
-			server = new MacosxJettyWebServer(port);
-		} else if (WebPlatformUtil.runOnLinux()) {
-			database = new LinuxDatabaseServer();
-			server = new LinuxJettyWebServer(port);
-		} else {
-			Logger.getLogger(JettyServerControl.class.getName()).log(Level.SEVERE, null, "Not supported platform");
-			System.exit(1);
-		}
-
-		new JettyServerControl(server, database).run(args);
 	}
 
 }

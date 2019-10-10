@@ -19,11 +19,29 @@
  */
 package org.prolobjectlink.web.platform;
 
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitInfo;
+
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
-import org.prolobjectlink.web.servlet.HomeServlet;
+import org.prolobjectlink.db.DatabaseDriver;
+import org.prolobjectlink.db.DatabaseDriverFactory;
+import org.prolobjectlink.db.jpa.spi.JPAPersistenceUnitInfo;
+import org.prolobjectlink.db.util.JavaReflect;
+import org.prolobjectlink.web.application.ControllerGenerator;
+import org.prolobjectlink.web.application.JettyControllerGenerator;
+import org.prolobjectlink.web.application.JettyModelGenerator;
+import org.prolobjectlink.web.application.ModelGenerator;
+import org.prolobjectlink.web.application.ServletUrlMapping;
+import org.prolobjectlink.web.servlet.DatabaseServlet;
+import org.prolobjectlink.web.servlet.DocumentsServlet;
+import org.prolobjectlink.web.servlet.ManagerServlet;
+import org.prolobjectlink.web.servlet.WelcomeServlet;
 
 /**
  * 
@@ -41,8 +59,43 @@ public abstract class AbstractJettyServer extends AbstractWebServer implements J
 		connector.setPort(serverPort);
 		jettyServer.setConnectors(new Connector[] { connector });
 		ServletHandler handler = new ServletHandler();
-		handler.addServletWithMapping(HomeServlet.class, "/home");
+		handler.addServletWithMapping(WelcomeServlet.class, "/welcome");
 		jettyServer.setHandler(handler);
+		handler.addServletWithMapping(DatabaseServlet.class, "/databases");
+		jettyServer.setHandler(handler);
+		handler.addServletWithMapping(ManagerServlet.class, "/manager");
+		jettyServer.setHandler(handler);
+		handler.addServletWithMapping(DocumentsServlet.class, "/doc");
+		jettyServer.setHandler(handler);
+
+		// applications models
+		try {
+			ModelGenerator modelGenerator = new JettyModelGenerator();
+			List<PersistenceUnitInfo> units = modelGenerator.getPersistenceUnits();
+			for (PersistenceUnitInfo unit : units) {
+				DatabaseDriver databaseDriver = DatabaseDriverFactory.createDriver(unit);
+				if (!databaseDriver.getDatabasePing()) {
+					databaseDriver.createDatabase();
+					JPAPersistenceUnitInfo jpaUnit = (JPAPersistenceUnitInfo) unit;
+					String name = jpaUnit.getPersistenceProviderClassName();
+					Class<?> cls = JavaReflect.classForName(name);
+					Object object = JavaReflect.newInstance(cls);
+					PersistenceProvider provider = (PersistenceProvider) object;
+					provider.generateSchema(unit, unit.getProperties());
+				}
+			}
+		} catch (SQLException e) {
+			// do nothing
+		}
+
+		// applications controllers
+		ControllerGenerator controllerGenerator = new JettyControllerGenerator();
+		List<ServletUrlMapping> mappings = controllerGenerator.getMappings();
+		for (ServletUrlMapping servletUrlMapping : mappings) {
+			handler.addServletWithMapping(servletUrlMapping.getServlet().getClass(), servletUrlMapping.getMappingUrl());
+			jettyServer.setHandler(handler);
+		}
+
 	}
 
 	public final String getVersion() {

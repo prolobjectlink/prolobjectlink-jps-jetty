@@ -38,10 +38,10 @@ import org.prolobjectlink.web.application.JettyControllerGenerator;
 import org.prolobjectlink.web.application.JettyModelGenerator;
 import org.prolobjectlink.web.application.ModelGenerator;
 import org.prolobjectlink.web.application.ServletUrlMapping;
-import org.prolobjectlink.web.servlet.DatabaseServlet;
-import org.prolobjectlink.web.servlet.DocumentsServlet;
-import org.prolobjectlink.web.servlet.ManagerServlet;
-import org.prolobjectlink.web.servlet.WelcomeServlet;
+import org.prolobjectlink.web.servlet.admin.DatabaseServlet;
+import org.prolobjectlink.web.servlet.admin.DocumentsServlet;
+import org.prolobjectlink.web.servlet.admin.ManagerServlet;
+import org.prolobjectlink.web.servlet.admin.WelcomeServlet;
 
 /**
  * 

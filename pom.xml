@@ -213,7 +213,7 @@
 							<goal>pdf</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.basedir}/doc</outputDirectory>
+							<outputDirectory>${project.basedir}/docs</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
